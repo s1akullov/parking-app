@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Где моя машина?</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Моя машина">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="description" content="Найдите свою машину быстро и легко">
+    
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%231a1a1a'/><text x='50%' y='50%' font-size='80' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='system-ui'>P</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a1a1a'/><text x='50%' y='50%' font-size='60' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='system-ui'>P</text></svg>">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogItCT0LTQtSDQvNC+0Y8g0LzQsNGI0LjQvdCwPyIsCiAgInNob3J0X25hbWUiOiAi0JzQvtGPINC80LDRiNC40L3QsCIsCiAgInN0YXJ0X3VybCI6ICIuLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMxYTFhMWEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxOTIgMTkyJz48cmVjdCB3aWR0aD0nMTkyJyBoZWlnaHQ9JzE5MicgZmlsbD0nJTIzMWExYTFhJy8+PHRleHQgeD0nNTAlJyB5PSc1MCUnIGZvbnQtc2l6ZT0nMTAwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyBmaWxsPSd3aGl0ZScgZm9udC1mYW1pbHk9J3N5c3RlbS11aSc+UDwvdGV4dD48L3N2Zz4iLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9LAogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCw8c3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInPjxyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyBmaWxsPSclMjMxYTFhMWEnLz48dGV4dCB4PSc1MCUnIHk9JzUwJScgZm9udC1zaXplPScyNjAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIGZpbGw9J3doaXRlJyBmb250LWZhbWlseT0nc3lzdGVtLXVpJz5QPC90ZXh0Pjwvc3ZnPiIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0KICBdCn0=">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #fff;
+            height: 100vh;
+            overflow: hidden;
+            color: #1a1a1a;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            letter-spacing: -0.3px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+            color: #1a1a1a;
+        }
+
+        .btn:hover {
+            background: #f9f9f9;
+            border-color: #d0d0d0;
+        }
+
+        .btn-primary {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+
+        .btn-primary:hover {
+            background: #333;
+            border-color: #333;
+        }
+
+        .btn-danger {
+            color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 81px);
+        }
+
+        .sidebar {
+            width: 380px;
+            background: #fff;
+            border-right: 1px solid #e5e5e5;
+            overflow-y: auto;
+            z-index: 500;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: #f5f5f5;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .section {
+            padding: 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            font-size: 15px;
+            letter-spacing: -0.2px;
+        }
+
+        .info-box {
+            background: #f9f9f9;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #737373;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: calc(50% - 6px);
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.2s;
+            background: #fff;
+        }
+
+        input[type="number"]:first-of-type {
+            margin-right: 12px;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #1a1a1a;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px dashed #d0d0d0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            background: #fafafa;
+        }
+
+        .photo-preview {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .timer-box {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .timer-label {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .timer-value {
+            font-size: 32px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -1px;
+        }
+
+        .alert-box {
+            background: #dc2626;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 12px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .distance-box {
+            background: #16a34a;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .distance-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .map-layers {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e5e5e5;
+            z-index: 1000;
+        }
+
+        .map-layers-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #737373;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .layer-button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border: 1px solid #e5e5e5;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .layer-button:last-child {
+            margin-bottom: 0;
+        }
+
+        .layer-button:hover {
+            background: #f9f9f9;
+            border-color: #d0d0d0;
+        }
+
+        .layer-button.active {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+
+        .map-legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 12px 14px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e5e5e5;
+            z-index: 1000;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-icon {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-text {
+            font-size: 13px;
+            color: #525252;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            color: #a3a3a3;
+        }
+
+        .empty-state-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            color: #525252;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #a3a3a3;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #1a1a1a;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+        }
+
+        .loading-subtext {
+            font-size: 13px;
+            color: #a3a3a3;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: absolute;
+                height: auto;
+                max-height: 50vh;
+                z-index: 1000;
+            }
+            
+            .header {
+                padding: 16px 20px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .header-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+
+            .map-layers {
+                top: 10px;
+                right: 10px;
+            }
+
+            .map-legend {
+                bottom: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Индикатор загрузки -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Загрузка карты</div>
+        <div class="loading-subtext">Подождите немного</div>
+    </div>
+
+    <div class="header">
+        <h1>Где моя машина?</h1>
+        <div class="header-buttons">
+            <button class="btn btn-primary" id="saveBtn" onclick="saveParking()">Сохранить парковку</button>
+            <button class="btn btn-danger hidden" id="clearBtn" onclick="clearParking()">Очистить</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div id="emptyState" class="section">
+                <div class="empty-state">
+                    <div class="empty-state-icon">P</div>
+                    <h3>Парковка не сохранена</h3>
+                    <p>Нажмите кнопку выше, чтобы запомнить местоположение автомобиля</p>
+                </div>
+            </div>
+
+            <div id="parkingInfo" class="hidden">
+                <div class="section">
+                    <div class="section-title">Местоположение</div>
+                    <div class="info-box">
+                        <div class="info-label">Координаты машины</div>
+                        <div class="info-value" id="carCoords">—</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Моё местоположение</div>
+                        <div class="info-value" id="myCoords">—</div>
+                    </div>
+                    <div class="distance-box" id="distanceBox">
+                        <div class="info-label" style="color: white; opacity: 0.8; font-size: 11px;">Расстояние</div>
+                        <div class="distance-value" id="distanceValue">—</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Оплаченное время</div>
+                    <input type="number" id="hoursInput" placeholder="Часы" min="0" max="23" value="0">
+                    <input type="number" id="minutesInput" placeholder="Минуты" min="0" max="59" value="0">
+                    <button class="btn btn-full" onclick="updateTimer()">Установить таймер</button>
+                    <div id="timerBox" class="hidden"></div>
+                    <div id="alertBox" class="hidden"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Фото парковки</div>
+                    <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="updatePhoto()">
+                    <img id="photoPreview" class="photo-preview hidden" alt="Фото парковки">
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- Переключатель слоёв карты -->
+            <div class="map-layers">
+                <div class="map-layers-title">Тип карты</div>
+                <button class="layer-button active" onclick="changeMapLayer('light')" id="layerLight">Светлая</button>
+                <button class="layer-button" onclick="changeMapLayer('standard')" id="layerStandard">Стандартная</button>
+                <button class="layer-button" onclick="changeMapLayer('satellite')" id="layerSatellite">Спутник</button>
+                <button class="layer-button" onclick="changeMapLayer('dark')" id="layerDark">Тёмная</button>
+            </div>
+            
+            <div class="map-legend">
+                <div class="legend-item">
+                    <span class="legend-icon" style="width: 12px; height: 12px; background: #dc2626; border-radius: 50%; display: inline-block;"></span>
+                    <span class="legend-text">Машина</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon" style="width: 12px; height: 12px; background: #1a1a1a; border-radius: 50%; display: inline-block;"></span>
+                    <span class="legend-text">Вы</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let carMarker;
+        let userMarker;
+        let userCircle;
+        let routeLine;
+        let currentLayer;
+        let parkingData = {
+            carLat: null,
+            carLng: null,
+            photo: null,
+            endTime: null
+        };
+        let userPosition = null;
+        let timerInterval = null;
+        let watchId = null;
+
+        // Определение слоёв карты
+        const mapLayers = {
+            light: {
+                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                attribution: ''
+            },
+            standard: {
+                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                attribution: ''
+            },
+            satellite: {
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                attribution: ''
+            },
+            dark: {
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                attribution: ''
+            }
+        };
+
+        // Инициализация карты с центром на Ростове-на-Дону
+        function initMap() {
+            // Координаты центра Ростова-на-Дону
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([47.2357, 39.7015], 13);
+
+            // Добавляем контролы в правый нижний угол
+            L.control.zoom({
+                position: 'bottomright'
+            }).addTo(map);
+
+            // Загружаем светлую карту по умолчанию
+            currentLayer = L.tileLayer(mapLayers.light.url, {
+                attribution: mapLayers.light.attribution,
+                maxZoom: 19
+            }).addTo(map);
+
+            // Получаем текущую позицию пользователя
+            startWatchingPosition();
+        }
+
+        // Функция смены слоя карты
+        function changeMapLayer(layerType) {
+            // Удаляем текущий слой
+            if (currentLayer) {
+                map.removeLayer(currentLayer);
+            }
+
+            // Добавляем новый слой
+            currentLayer = L.tileLayer(mapLayers[layerType].url, {
+                attribution: mapLayers[layerType].attribution,
+                maxZoom: 19
+            }).addTo(map);
+
+            // Обновляем активную кнопку
+            document.querySelectorAll('.layer-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('layer' + layerType.charAt(0).toUpperCase() + layerType.slice(1)).classList.add('active');
+        }
+
+        // Отслеживание позиции пользователя
+        function startWatchingPosition() {
+            if (navigator.geolocation) {
+                // Сначала пробуем получить позицию один раз
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        userPosition = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        updateUserMarker();
+                        updateDistance();
+                        updateMyCoords();
+                        
+                        // Если успешно, начинаем отслеживание
+                        watchId = navigator.geolocation.watchPosition(
+                            function(position) {
+                                userPosition = {
+                                    lat: position.coords.latitude,
+                                    lng: position.coords.longitude
+                                };
+                                updateUserMarker();
+                                updateDistance();
+                                updateMyCoords();
+                            },
+                            function(error) {
+                                console.error('Ошибка отслеживания:', error);
+                            },
+                            {
+                                enableHighAccuracy: true,
+                                maximumAge: 30000,
+                                timeout: 27000
+                            }
+                        );
+                    },
+                    function(error) {
+                        let errorMessage = '';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = '🚫 Доступ к геолокации запрещён.\n\nРазрешите доступ к местоположению:\n1. Нажмите на иконку 🔒 в адресной строке\n2. Разрешите доступ к местоположению\n3. Обновите страницу';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = '📡 Не удалось определить местоположение.\n\nПроверьте:\n• Включен ли GPS/Wi-Fi\n• Находитесь ли вы в помещении\n• Есть ли доступ к сети';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = '⏱️ Время ожидания истекло.\n\nПопробуйте:\n• Обновить страницу\n• Выйти на открытое пространство\n• Проверить подключение к интернету';
+                                break;
+                            default:
+                                errorMessage = '❌ Неизвестная ошибка геолокации.\n\nПопробуйте обновить страницу.';
+                        }
+                        alert(errorMessage);
+                        console.error('Код ошибки:', error.code, 'Сообщение:', error.message);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        maximumAge: 30000,
+                        timeout: 10000
+                    }
+                );
+            } else {
+                alert('❌ Геолокация не поддерживается вашим браузером.\n\nИспользуйте современный браузер (Chrome, Firefox, Safari).');
+            }
+        }
+
+        // Обновление маркера пользователя
+        function updateUserMarker() {
+            if (!userPosition) return;
+
+            if (userMarker) {
+                userMarker.setLatLng([userPosition.lat, userPosition.lng]);
+            } else {
+                const userIcon = L.divIcon({
+                    html: '<div style="width: 14px; height: 14px; background: #1a1a1a; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+                    className: 'custom-marker',
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+                userMarker = L.marker([userPosition.lat, userPosition.lng], {icon: userIcon}).addTo(map);
+                userMarker.bindPopup('Вы здесь');
+            }
+
+            if (userCircle) {
+                userCircle.setLatLng([userPosition.lat, userPosition.lng]);
+            } else {
+                userCircle = L.circle([userPosition.lat, userPosition.lng], {
+                    color: '#1a1a1a',
+                    fillColor: '#1a1a1a',
+                    fillOpacity: 0.1,
+                    radius: 20,
+                    weight: 1
+                }).addTo(map);
+            }
+
+            // Центрируем карту на пользователе при первой загрузке (если нет сохранённой парковки)
+            if (!parkingData.carLat) {
+                map.setView([userPosition.lat, userPosition.lng], 15);
+            }
+
+            updateRoute();
+        }
+
+        // Сохранение парковки
+        function saveParking() {
+            if (!userPosition) {
+                alert('❌ Не удалось определить ваше местоположение. Пожалуйста, разрешите доступ к геолокации.');
+                return;
+            }
+
+            parkingData.carLat = userPosition.lat;
+            parkingData.carLng = userPosition.lng;
+
+            // Создаём маркер машины
+            if (carMarker) {
+                carMarker.setLatLng([parkingData.carLat, parkingData.carLng]);
+            } else {
+                const carIcon = L.divIcon({
+                    html: '<div style="width: 16px; height: 16px; background: #dc2626; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+                    className: 'custom-marker',
+                    iconSize: [22, 22],
+                    iconAnchor: [11, 11]
+                });
+                carMarker = L.marker([parkingData.carLat, parkingData.carLng], {icon: carIcon}).addTo(map);
+                carMarker.bindPopup('Ваша машина');
+            }
+
+            saveParkingData();
+            showParkingInfo();
+            updateCarCoords();
+            updateDistance();
+            updateRoute();
+
+            // Показываем обе точки на карте
+            if (userPosition) {
+                const bounds = L.latLngBounds(
+                    [parkingData.carLat, parkingData.carLng],
+                    [userPosition.lat, userPosition.lng]
+                );
+                map.fitBounds(bounds, {padding: [50, 50]});
+            }
+        }
+
+        // Обновление маршрута
+        function updateRoute() {
+            if (!parkingData.carLat || !userPosition) return;
+
+            if (routeLine) {
+                map.removeLayer(routeLine);
+            }
+
+            routeLine = L.polyline([
+                [parkingData.carLat, parkingData.carLng],
+                [userPosition.lat, userPosition.lng]
+            ], {
+                color: '#1a1a1a',
+                weight: 2,
+                opacity: 0.6,
+                dashArray: '8, 8'
+            }).addTo(map);
+        }
+
+        // Расчёт расстояния
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371e3;
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c;
+        }
+
+        // Обновление расстояния
+        function updateDistance() {
+            if (!parkingData.carLat || !userPosition) return;
+
+            const distance = calculateDistance(
+                parkingData.carLat,
+                parkingData.carLng,
+                userPosition.lat,
+                userPosition.lng
+            );
+
+            let distanceText;
+            if (distance < 1000) {
+                distanceText = Math.round(distance) + ' м';
+            } else {
+                distanceText = (distance / 1000).toFixed(2) + ' км';
+            }
+
+            document.getElementById('distanceValue').textContent = distanceText;
+        }
+
+        // Обновление координат
+        function updateCarCoords() {
+            if (parkingData.carLat && parkingData.carLng) {
+                document.getElementById('carCoords').textContent = 
+                    `${parkingData.carLat.toFixed(6)}, ${parkingData.carLng.toFixed(6)}`;
+            }
+        }
+
+        function updateMyCoords() {
+            if (userPosition) {
+                document.getElementById('myCoords').textContent = 
+                    `${userPosition.lat.toFixed(6)}, ${userPosition.lng.toFixed(6)}`;
+            }
+        }
+
+        // Показать информацию о парковке
+        function showParkingInfo() {
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('parkingInfo').classList.remove('hidden');
+            document.getElementById('saveBtn').classList.add('hidden');
+            document.getElementById('clearBtn').classList.remove('hidden');
+        }
+
+        // Обновление таймера
+        function updateTimer() {
+            const hours = parseInt(document.getElementById('hoursInput').value) || 0;
+            const minutes = parseInt(document.getElementById('minutesInput').value) || 0;
+
+            if (hours === 0 && minutes === 0) {
+                document.getElementById('timerBox').classList.add('hidden');
+                document.getElementById('alertBox').classList.add('hidden');
+                parkingData.endTime = null;
+                saveParkingData();
+                return;
+            }
+
+            const now = new Date();
+            parkingData.endTime = now.getTime() + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000);
+            saveParkingData();
+            startTimer();
+        }
+
+        // Запуск таймера
+        function startTimer() {
+            const timerBox = document.getElementById('timerBox');
+            const alertBox = document.getElementById('alertBox');
+            
+            timerBox.innerHTML = '<div class="timer-label">Осталось времени</div><div class="timer-value" id="timeRemaining"></div>';
+            timerBox.classList.remove('hidden');
+            alertBox.classList.add('hidden');
+
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            timerInterval = setInterval(function() {
+                const now = new Date().getTime();
+                const remaining = parkingData.endTime - now;
+
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerBox.classList.add('hidden');
+                    alertBox.innerHTML = '⚠️ Время парковки истекло';
+                    alertBox.classList.remove('hidden');
+                    alertBox.className = 'alert-box';
+                    return;
+                }
+
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+                document.getElementById('timeRemaining').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Обновление фото
+        function updatePhoto() {
+            const file = document.getElementById('photoInput').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    parkingData.photo = e.target.result;
+                    const preview = document.getElementById('photoPreview');
+                    preview.src = parkingData.photo;
+                    preview.classList.remove('hidden');
+                    saveParkingData();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Очистка парковки
+        function clearParking() {
+            if (!confirm('Удалить все данные о парковке?')) return;
+
+            parkingData = {
+                carLat: null,
+                carLng: null,
+                photo: null,
+                endTime: null
+            };
+
+            if (carMarker) {
+                map.removeLayer(carMarker);
+                carMarker = null;
+            }
+
+            if (routeLine) {
+                map.removeLayer(routeLine);
+                routeLine = null;
+            }
+
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('parkingInfo').classList.add('hidden');
+            document.getElementById('saveBtn').classList.remove('hidden');
+            document.getElementById('clearBtn').classList.add('hidden');
+            document.getElementById('photoPreview').classList.add('hidden');
+            document.getElementById('photoInput').value = '';
+            document.getElementById('hoursInput').value = '0';
+            document.getElementById('minutesInput').value = '0';
+
+            deleteParkingData();
+        }
+
+        // Работа с данными
+        function saveParkingData() {
+            sessionStorage.setItem('parkingData', JSON.stringify(parkingData));
+        }
+
+        function loadParkingData() {
+            const data = sessionStorage.getItem('parkingData');
+            if (data) {
+                parkingData = JSON.parse(data);
+                
+                if (parkingData.carLat && parkingData.carLng) {
+                    showParkingInfo();
+                    
+                    const carIcon = L.divIcon({
+                        html: '<div style="width: 16px; height: 16px; background: #dc2626; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+                        className: 'custom-marker',
+                        iconSize: [22, 22],
+                        iconAnchor: [11, 11]
+                    });
+                    carMarker = L.marker([parkingData.carLat, parkingData.carLng], {icon: carIcon}).addTo(map);
+                    carMarker.bindPopup('Ваша машина');
+                    
+                    updateCarCoords();
+                    updateDistance();
+                    updateRoute();
+                    
+                    if (parkingData.photo) {
+                        document.getElementById('photoPreview').src = parkingData.photo;
+                        document.getElementById('photoPreview').classList.remove('hidden');
+                    }
+                    
+                    if (parkingData.endTime) {
+                        const now = new Date().getTime();
+                        if (parkingData.endTime > now) {
+                            startTimer();
+                        } else {
+                            const alertBox = document.getElementById('alertBox');
+                            alertBox.innerHTML = '⚠️ Время парковки истекло';
+                            alertBox.classList.remove('hidden');
+                            alertBox.className = 'alert-box';
+                        }
+                    }
+                }
+            }
+        }
+
+        function deleteParkingData() {
+            sessionStorage.removeItem('parkingData');
+        }
+
+        // Инициализация при загрузке
+        window.onload = function() {
+            // Ждём полной загрузки Leaflet
+            if (typeof L !== 'undefined') {
+                initMap();
+                loadParkingData();
+                hideLoading();
+            } else {
+                // Если Leaflet не загрузился, ждём и пробуем снова
+                let attempts = 0;
+                const maxAttempts = 5;
+                
+                const checkLeaflet = setInterval(function() {
+                    attempts++;
+                    
+                    if (typeof L !== 'undefined') {
+                        clearInterval(checkLeaflet);
+                        initMap();
+                        loadParkingData();
+                        hideLoading();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkLeaflet);
+                        showLoadingError();
+                    }
+                }, 500);
+            }
+        };
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(function() {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        function showLoadingError() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+                    <div class="loading-text">Ошибка загрузки карты</div>
+                    <div class="loading-subtext" style="margin-bottom: 20px;">Проверьте подключение к интернету</div>
+                    <button onclick="location.reload()" style="padding: 12px 24px; background: #1a1a1a; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                        Обновить страницу
+                    </button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
