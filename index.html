@@ -5,26 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Где моя машина?</title>
     
-    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Моя машина">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a1a1a">
-    <meta name="description" content="Найдите свою машину быстро и легко">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #fff;
             height: 100vh;
             overflow: hidden;
@@ -40,15 +32,9 @@
             align-items: center;
         }
 
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 12px;
-        }
+        .header h1 { font-size: 20px; font-weight: 600; }
+        
+        .header-buttons { display: flex; gap: 12px; }
 
         .btn {
             padding: 10px 18px;
@@ -61,21 +47,12 @@
             color: #1a1a1a;
         }
 
-        .btn-primary {
-            background: #1a1a1a;
-            color: #fff;
-            border-color: #1a1a1a;
-        }
+        .btn-primary { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+        .btn-danger { color: #dc2626; border-color: #dc2626; }
+        .btn-icon { padding: 10px; width: 44px; height: 44px; }
+        .btn-full { width: 100%; padding: 12px; margin-top: 12px; }
 
-        .btn-danger {
-            color: #dc2626;
-            border-color: #dc2626;
-        }
-
-        .main-container {
-            display: flex;
-            height: calc(100vh - 81px);
-        }
+        .main-container { display: flex; height: calc(100vh - 81px); }
 
         .sidebar {
             width: 380px;
@@ -84,39 +61,14 @@
             overflow-y: auto;
         }
 
-        .map-container {
-            flex: 1;
-            position: relative;
-        }
+        .map-container { flex: 1; position: relative; }
+        #map { width: 100%; height: 100%; }
 
-        #map {
-            width: 100%;
-            height: 100%;
-        }
+        .section { padding: 24px; border-bottom: 1px solid #f0f0f0; }
+        .section-title { font-weight: 600; margin-bottom: 16px; font-size: 15px; }
 
-        .section {
-            padding: 24px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .section-title {
-            font-weight: 600;
-            margin-bottom: 16px;
-            font-size: 15px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 30px;
-            color: #a3a3a3;
-        }
-
-        .empty-state-icon {
-            font-size: 56px;
-            margin-bottom: 16px;
-            opacity: 0.3;
-            font-weight: 700;
-        }
+        .empty-state { text-align: center; padding: 60px 30px; color: #a3a3a3; }
+        .empty-state-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.3; font-weight: 700; }
 
         .info-box {
             background: #f9f9f9;
@@ -126,17 +78,8 @@
             border: 1px solid #f0f0f0;
         }
 
-        .info-label {
-            font-size: 11px;
-            color: #737373;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .info-value {
-            font-size: 14px;
-            font-weight: 500;
-        }
+        .info-label { font-size: 11px; color: #737373; margin-bottom: 6px; text-transform: uppercase; }
+        .info-value { font-size: 14px; font-weight: 500; }
 
         .distance-box {
             background: #16a34a;
@@ -147,23 +90,50 @@
             margin-top: 12px;
         }
 
-        .distance-value {
-            font-size: 24px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
+        .distance-value { font-size: 24px; font-weight: 600; margin-top: 4px; }
 
-        .btn-full {
-            width: 100%;
-            padding: 12px;
+        .timer-box {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
             margin-top: 12px;
         }
 
-        .hidden {
-            display: none;
+        .timer-label {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
-        input[type="number"], textarea {
+        .timer-value { font-size: 32px; font-weight: 600; }
+
+        .alert-box {
+            background: #dc2626;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        .cost-display {
+            background: #e6f7ff;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 12px;
+            border: 1px solid #b3e0ff;
+        }
+
+        .cost-value { font-size: 28px; font-weight: 600; color: #0066cc; margin-top: 4px; }
+
+        .hidden { display: none; }
+
+        input[type="number"] {
             width: calc(50% - 6px);
             padding: 12px;
             border: 1px solid #e5e5e5;
@@ -171,11 +141,17 @@
             font-size: 14px;
         }
 
+        input[type="number"]:first-of-type { margin-right: 12px; }
+
         textarea {
             width: 100%;
-            min-height: 60px;
-            resize: vertical;
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 14px;
             font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
         }
 
         input[type="file"] {
@@ -200,14 +176,116 @@
             border-radius: 8px;
             margin-top: 12px;
             font-size: 14px;
+            border: 1px solid #f0e5c0;
         }
 
-        .loading-overlay {
+        .favorites-list { margin-top: 12px; }
+
+        .favorite-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .favorite-name { font-weight: 600; font-size: 14px; }
+        .favorite-distance { font-size: 12px; color: #737373; margin-top: 2px; }
+
+        .favorite-actions { display: flex; gap: 8px; }
+
+        .favorite-btn {
+            padding: 6px 10px;
+            border: 1px solid #e5e5e5;
+            background: white;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .favorite-btn.delete { color: #dc2626; border-color: #dc2626; }
+
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show { display: flex; }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 16px; }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .toggle-label { font-size: 14px; font-weight: 500; }
+
+        .toggle-input { position: relative; width: 48px; height: 28px; }
+        .toggle-input input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e5e5e5;
+            transition: 0.3s;
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-input input:checked + .toggle-slider { background-color: #1a1a1a; }
+        .toggle-input input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+        body.dark-theme { background: #1a1a1a; color: #e5e5e5; }
+        body.dark-theme .header { background: #1a1a1a; border-bottom-color: #333; }
+        body.dark-theme .sidebar { background: #1a1a1a; border-right-color: #333; }
+        body.dark-theme .section { border-bottom-color: #333; }
+        body.dark-theme .info-box { background: #262626; border-color: #333; }
+        body.dark-theme .btn { background: #262626; border-color: #333; color: #e5e5e5; }
+        body.dark-theme .btn-primary { background: #e5e5e5; color: #1a1a1a; }
+        body.dark-theme input, body.dark-theme textarea { background: #262626; border-color: #333; color: #e5e5e5; }
+        body.dark-theme .modal-content { background: #1a1a1a; }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: #fff;
             display: flex;
             flex-direction: column;
@@ -226,8 +304,10 @@
             margin-bottom: 20px;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; position: absolute; max-height: 50vh; z-index: 1000; }
         }
     </style>
 </head>
@@ -240,7 +320,8 @@
     <div class="header">
         <h1>Где моя машина?</h1>
         <div class="header-buttons">
-            <button class="btn btn-primary" id="saveBtn" onclick="saveParking()">Сохранить парковку</button>
+            <button class="btn btn-icon" onclick="openSettings()" title="Настройки">⚙️</button>
+            <button class="btn btn-primary" id="saveBtn" onclick="saveParking()">Сохранить</button>
             <button class="btn btn-danger hidden" id="clearBtn" onclick="clearParking()">Очистить</button>
         </div>
     </div>
@@ -251,7 +332,7 @@
                 <div class="empty-state">
                     <div class="empty-state-icon">P</div>
                     <h3>Парковка не сохранена</h3>
-                    <p>Нажмите кнопку выше, чтобы запомнить местоположение автомобиля</p>
+                    <p>Нажмите кнопку выше</p>
                 </div>
             </div>
 
@@ -259,32 +340,54 @@
                 <div class="section">
                     <div class="section-title">Местоположение</div>
                     <div class="info-box">
-                        <div class="info-label">Координаты машины</div>
+                        <div class="info-label">Машина</div>
                         <div class="info-value" id="carCoords">—</div>
                     </div>
                     <div class="info-box">
-                        <div class="info-label">Моё местоположение</div>
+                        <div class="info-label">Вы</div>
                         <div class="info-value" id="myCoords">—</div>
                     </div>
                     <div class="distance-box">
                         <div class="info-label" style="color: white; opacity: 0.8;">Расстояние</div>
                         <div class="distance-value" id="distanceValue">—</div>
                     </div>
-                    <button class="btn btn-full" onclick="shareLocation()">Поделиться местом</button>
+                    <button class="btn btn-full" onclick="shareLocation()">📤 Поделиться</button>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">Быстрая заметка</div>
+                    <div class="section-title">Заметка</div>
                     <textarea id="noteInput" placeholder="Уровень 2, место 45..."></textarea>
-                    <button class="btn btn-full" onclick="saveNote()">Сохранить</button>
+                    <button class="btn btn-full" onclick="saveNote()">Сохранить заметку</button>
                     <div id="noteDisplay" class="note-display hidden"></div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">Фото парковки</div>
+                    <div class="section-title">Калькулятор стоимости</div>
+                    <input type="number" id="hourlyRate" placeholder="₽/час" min="0" style="width: 100%; margin-bottom: 12px;">
+                    <button class="btn btn-full" onclick="calculateCost()">Рассчитать</button>
+                    <div id="costDisplay" class="hidden"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Оплаченное время</div>
+                    <input type="number" id="hoursInput" placeholder="Часы" min="0" max="23" value="0">
+                    <input type="number" id="minutesInput" placeholder="Минуты" min="0" max="59" value="0">
+                    <button class="btn btn-full" onclick="updateTimer()">Установить таймер</button>
+                    <div id="timerBox" class="hidden"></div>
+                    <div id="alertBox" class="hidden"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Фото</div>
                     <input type="file" id="photoInput" accept="image/*" onchange="updatePhoto()">
                     <img id="photoPreview" class="photo-preview hidden">
                 </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">⭐ Избранное</div>
+                <button class="btn btn-full" onclick="addToFavorites()">Добавить место</button>
+                <div id="favoritesList" class="favorites-list"></div>
             </div>
         </div>
 
@@ -293,10 +396,40 @@
         </div>
     </div>
 
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-title">Настройки</div>
+            <div class="toggle-switch">
+                <div class="toggle-label">Авто тёмная тема</div>
+                <label class="toggle-input">
+                    <input type="checkbox" id="autoThemeToggle" onchange="toggleAutoTheme()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-full" onclick="closeSettings()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="favoritesModal">
+        <div class="modal-content">
+            <div class="modal-title">Добавить в избранное</div>
+            <input type="text" id="favoriteName" placeholder="Название" style="width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 8px; margin-bottom: 16px;">
+            <div class="modal-buttons">
+                <button class="btn" onclick="closeFavoritesModal()">Отмена</button>
+                <button class="btn btn-primary" onclick="saveFavorite()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        let map, carMarker, userMarker, userCircle, routeLine;
-        let parkingData = { carLat: null, carLng: null, photo: null, note: '' };
+        let map, carMarker, userMarker;
+        let parkingData = { carLat: null, carLng: null, photo: null, note: '', hourlyRate: 0, savedAt: null, endTime: null };
         let userPosition = null;
+        let timerInterval = null;
+        let favoriteLocations = [];
+        let settings = { autoTheme: false };
 
         function initMap() {
             map = L.map('map', { attributionControl: false }).setView([47.2357, 39.7015], 13);
@@ -306,45 +439,38 @@
 
         function startWatchingPosition() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    position => {
-                        userPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
-                        updateUserMarker();
-                    },
-                    error => alert('Не удалось получить геолокацию')
-                );
+                navigator.geolocation.getCurrentPosition(pos => {
+                    userPosition = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    updateUserMarker();
+                    updateMyCoords();
+                }, err => console.error(err));
             }
         }
 
         function updateUserMarker() {
             if (!userPosition) return;
-            
             const icon = L.divIcon({
                 html: '<div style="width: 14px; height: 14px; background: #1a1a1a; border: 3px solid white; border-radius: 50%;"></div>',
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
+                iconSize: [20, 20], iconAnchor: [10, 10]
             });
-            
             if (userMarker) {
                 userMarker.setLatLng([userPosition.lat, userPosition.lng]);
             } else {
                 userMarker = L.marker([userPosition.lat, userPosition.lng], {icon}).addTo(map);
             }
-            
             if (!parkingData.carLat) map.setView([userPosition.lat, userPosition.lng], 15);
             updateDistance();
         }
 
         function saveParking() {
-            if (!userPosition) return alert('Сначала определите местоположение');
-            
+            if (!userPosition) return alert('Определите местоположение');
             parkingData.carLat = userPosition.lat;
             parkingData.carLng = userPosition.lng;
+            parkingData.savedAt = Date.now();
             
             const icon = L.divIcon({
                 html: '<div style="width: 16px; height: 16px; background: #dc2626; border: 3px solid white; border-radius: 50%;"></div>',
-                iconSize: [22, 22],
-                iconAnchor: [11, 11]
+                iconSize: [22, 22], iconAnchor: [11, 11]
             });
             
             if (carMarker) {
@@ -358,37 +484,33 @@
             document.getElementById('parkingInfo').classList.remove('hidden');
             document.getElementById('saveBtn').classList.add('hidden');
             document.getElementById('clearBtn').classList.remove('hidden');
-            
-            updateCoords();
+            updateCarCoords();
             updateDistance();
         }
 
-        function updateCoords() {
+        function updateCarCoords() {
             if (parkingData.carLat) {
-                document.getElementById('carCoords').textContent = 
-                    `${parkingData.carLat.toFixed(6)}, ${parkingData.carLng.toFixed(6)}`;
+                document.getElementById('carCoords').textContent = `${parkingData.carLat.toFixed(6)}, ${parkingData.carLng.toFixed(6)}`;
             }
+        }
+
+        function updateMyCoords() {
             if (userPosition) {
-                document.getElementById('myCoords').textContent = 
-                    `${userPosition.lat.toFixed(6)}, ${userPosition.lng.toFixed(6)}`;
+                document.getElementById('myCoords').textContent = `${userPosition.lat.toFixed(6)}, ${userPosition.lng.toFixed(6)}`;
             }
         }
 
         function updateDistance() {
             if (!parkingData.carLat || !userPosition) return;
-            
             const R = 6371e3;
             const φ1 = parkingData.carLat * Math.PI / 180;
             const φ2 = userPosition.lat * Math.PI / 180;
             const Δφ = (userPosition.lat - parkingData.carLat) * Math.PI / 180;
             const Δλ = (userPosition.lng - parkingData.carLng) * Math.PI / 180;
-            
             const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             const distance = R * c;
-            
-            document.getElementById('distanceValue').textContent = 
-                distance < 1000 ? Math.round(distance) + ' м' : (distance / 1000).toFixed(2) + ' км';
+            document.getElementById('distanceValue').textContent = distance < 1000 ? Math.round(distance) + ' м' : (distance / 1000).toFixed(2) + ' км';
         }
 
         function saveNote() {
@@ -400,6 +522,65 @@
                 display.textContent = note;
                 display.classList.remove('hidden');
             }
+        }
+
+        function calculateCost() {
+            const rate = parseFloat(document.getElementById('hourlyRate').value);
+            if (!rate || rate <= 0) return alert('Введите стоимость');
+            parkingData.hourlyRate = rate;
+            sessionStorage.setItem('parkingData', JSON.stringify(parkingData));
+            updateCostDisplay();
+        }
+
+        function updateCostDisplay() {
+            if (!parkingData.hourlyRate || !parkingData.savedAt) return;
+            const now = Date.now();
+            const hours = (now - parkingData.savedAt) / (1000 * 60 * 60);
+            const cost = Math.ceil(hours * parkingData.hourlyRate);
+            const display = document.getElementById('costDisplay');
+            display.innerHTML = `<div class="info-label" style="color: #0066cc; opacity: 0.8;">Стоимость</div><div class="cost-value">${cost} ₽</div><div style="font-size: 12px; color: #737373; margin-top: 4px;">${hours.toFixed(1)} ч × ${parkingData.hourlyRate} ₽/ч</div>`;
+            display.classList.remove('hidden');
+        }
+
+        function updateTimer() {
+            const hours = parseInt(document.getElementById('hoursInput').value) || 0;
+            const minutes = parseInt(document.getElementById('minutesInput').value) || 0;
+            if (hours === 0 && minutes === 0) {
+                document.getElementById('timerBox').classList.add('hidden');
+                document.getElementById('alertBox').classList.add('hidden');
+                parkingData.endTime = null;
+                sessionStorage.setItem('parkingData', JSON.stringify(parkingData));
+                return;
+            }
+            parkingData.endTime = Date.now() + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000);
+            sessionStorage.setItem('parkingData', JSON.stringify(parkingData));
+            startTimer();
+        }
+
+        function startTimer() {
+            const timerBox = document.getElementById('timerBox');
+            const alertBox = document.getElementById('alertBox');
+            timerBox.innerHTML = '<div class="timer-label">Осталось времени</div><div class="timer-value" id="timeRemaining"></div>';
+            timerBox.classList.remove('hidden');
+            alertBox.classList.add('hidden');
+
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                const now = Date.now();
+                const remaining = parkingData.endTime - now;
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerBox.classList.add('hidden');
+                    alertBox.innerHTML = '⚠️ Время истекло';
+                    alertBox.classList.remove('hidden');
+                    return;
+                }
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                document.getElementById('timeRemaining').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
         }
 
         function updatePhoto() {
@@ -422,14 +603,15 @@
             if (navigator.share) {
                 navigator.share({ title: 'Моя машина', url });
             } else {
-                navigator.clipboard.writeText(url).then(() => alert('Ссылка скопирована!'));
+                navigator.clipboard.writeText(url).then(() => alert('✅ Ссылка скопирована!'));
             }
         }
 
         function clearParking() {
-            if (!confirm('Удалить данные?')) return;
-            parkingData = { carLat: null, carLng: null, photo: null, note: '' };
+            if (!confirm('Удалить?')) return;
+            parkingData = { carLat: null, carLng: null, photo: null, note: '', hourlyRate: 0, savedAt: null, endTime: null };
             if (carMarker) map.removeLayer(carMarker);
+            if (timerInterval) clearInterval(timerInterval);
             sessionStorage.removeItem('parkingData');
             document.getElementById('emptyState').classList.remove('hidden');
             document.getElementById('parkingInfo').classList.add('hidden');
@@ -437,7 +619,115 @@
             document.getElementById('clearBtn').classList.add('hidden');
         }
 
+        function loadFavorites() {
+            const saved = localStorage.getItem('favorites');
+            if (saved) {
+                favoriteLocations = JSON.parse(saved);
+                displayFavorites();
+            }
+        }
+
+        function displayFavorites() {
+            const list = document.getElementById('favoritesList');
+            if (!favoriteLocations || favoriteLocations.length === 0) {
+                list.innerHTML = '<p style="color: #a3a3a3; font-size: 13px; text-align: center; padding: 20px 0;">Нет мест</p>';
+                return;
+            }
+            list.innerHTML = favoriteLocations.map((fav, i) => {
+                let distText = '—';
+                if (userPosition) {
+                    const R = 6371e3;
+                    const φ1 = userPosition.lat * Math.PI / 180;
+                    const φ2 = fav.lat * Math.PI / 180;
+                    const Δφ = (fav.lat - userPosition.lat) * Math.PI / 180;
+                    const Δλ = (fav.lng - userPosition.lng) * Math.PI / 180;
+                    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                    const dist = R * c;
+                    distText = dist < 1000 ? Math.round(dist) + ' м' : (dist / 1000).toFixed(1) + ' км';
+                }
+                return `<div class="favorite-item"><div><div class="favorite-name">${fav.name}</div><div class="favorite-distance">${distText}</div></div><div class="favorite-actions"><button class="favorite-btn" onclick="navigateToFavorite(${i})">Показать</button><button class="favorite-btn delete" onclick="deleteFavorite(${i})">×</button></div></div>`;
+            }).join('');
+        }
+
+        function addToFavorites() {
+            if (!userPosition && !parkingData.carLat) return alert('Нет местоположения');
+            document.getElementById('favoritesModal').classList.add('show');
+        }
+
+        function saveFavorite() {
+            const name = document.getElementById('favoriteName').value.trim();
+            if (!name) return alert('Введите название');
+            const location = { name, lat: parkingData.carLat || userPosition.lat, lng: parkingData.carLng || userPosition.lng };
+            favoriteLocations.push(location);
+            localStorage.setItem('favorites', JSON.stringify(favoriteLocations));
+            displayFavorites();
+            closeFavoritesModal();
+            document.getElementById('favoriteName').value = '';
+        }
+
+        function navigateToFavorite(i) {
+            const fav = favoriteLocations[i];
+            map.setView([fav.lat, fav.lng], 16);
+            const marker = L.marker([fav.lat, fav.lng]).addTo(map);
+            marker.bindPopup(fav.name).openPopup();
+            setTimeout(() => map.removeLayer(marker), 5000);
+        }
+
+        function deleteFavorite(i) {
+            if (confirm(`Удалить "${favoriteLocations[i].name}"?`)) {
+                favoriteLocations.splice(i, 1);
+                localStorage.setItem('favorites', JSON.stringify(favoriteLocations));
+                displayFavorites();
+            }
+        }
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('show');
+            document.getElementById('autoThemeToggle').checked = settings.autoTheme;
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+
+        function closeFavoritesModal() {
+            document.getElementById('favoritesModal').classList.remove('show');
+        }
+
+        function toggleAutoTheme() {
+            settings.autoTheme = document.getElementById('autoThemeToggle').checked;
+            localStorage.setItem('settings', JSON.stringify(settings));
+            applyTheme();
+        }
+
+        function applyTheme() {
+            if (settings.autoTheme) {
+                const hour = new Date().getHours();
+                if (hour >= 20 || hour < 7) {
+                    document.body.classList.add('dark-theme');
+                } else {
+                    document.body.classList.remove('dark-theme');
+                }
+            }
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('settings');
+            if (saved) {
+                settings = JSON.parse(saved);
+                applyTheme();
+            }
+        }
+
+        setInterval(() => {
+            if (parkingData.hourlyRate && parkingData.savedAt) updateCostDisplay();
+        }, 60000);
+
         window.onload = () => {
+            loadSettings();
+            loadFavorites();
+            
             if (typeof L !== 'undefined') {
                 initMap();
                 document.getElementById('loadingOverlay').style.display = 'none';
@@ -448,24 +738,36 @@
                     if (parkingData.carLat) {
                         const icon = L.divIcon({
                             html: '<div style="width: 16px; height: 16px; background: #dc2626; border: 3px solid white; border-radius: 50%;"></div>',
-                            iconSize: [22, 22],
-                            iconAnchor: [11, 11]
+                            iconSize: [22, 22], iconAnchor: [11, 11]
                         });
                         carMarker = L.marker([parkingData.carLat, parkingData.carLng], {icon}).addTo(map);
                         document.getElementById('emptyState').classList.add('hidden');
                         document.getElementById('parkingInfo').classList.remove('hidden');
                         document.getElementById('saveBtn').classList.add('hidden');
                         document.getElementById('clearBtn').classList.remove('hidden');
-                        updateCoords();
+                        updateCarCoords();
                         
                         if (parkingData.note) {
                             document.getElementById('noteInput').value = parkingData.note;
                             document.getElementById('noteDisplay').textContent = parkingData.note;
                             document.getElementById('noteDisplay').classList.remove('hidden');
                         }
+                        if (parkingData.hourlyRate) {
+                            document.getElementById('hourlyRate').value = parkingData.hourlyRate;
+                            updateCostDisplay();
+                        }
                         if (parkingData.photo) {
                             document.getElementById('photoPreview').src = parkingData.photo;
                             document.getElementById('photoPreview').classList.remove('hidden');
+                        }
+                        if (parkingData.endTime) {
+                            const now = Date.now();
+                            if (parkingData.endTime > now) {
+                                startTimer();
+                            } else {
+                                document.getElementById('alertBox').innerHTML = '⚠️ Время истекло';
+                                document.getElementById('alertBox').classList.remove('hidden');
+                            }
                         }
                     }
                 }
